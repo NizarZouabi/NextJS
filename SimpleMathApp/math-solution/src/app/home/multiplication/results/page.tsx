@@ -24,13 +24,16 @@ export default function ResultsPage() {
         }
     },[router])
 
+    const uniqueMistakesSet = new Set(mistakes)
+    const uniqueMistakes = Array.from(uniqueMistakesSet)
+
 
   return (
-    <div className="py-48 max-h-screen flex flex-col justify-center items-center">
+    <div className="py-48 min-h-screen flex flex-col justify-center items-center">
         <h1 className="text-6xl text-center px-2">You scored <span className={yourScore > 12 ? "text-green-400" : "text-red-400"}>{yourScore}</span>/20</h1>
             <div className="text-center text-4xl">
                 {yourScore < 20 ? <h2>You need to memorize:</h2> : null}
-                {yourScore < 20 ? mistakes.map((mistake) => (<>
+                {yourScore < 20 && uniqueMistakes.length > 0 ? uniqueMistakes.map((mistake) => (<>
                 <p className="pt-5 text-red-500">{mistake}</p>
                 </>)) : (<><h1 className="text-green-400 p-5">Well Done!</h1></>)}
             </div>

@@ -68,7 +68,7 @@ export default function Questions(props: QuestionsProps) {
   },[router])
 
   return (
-    <div className="flex flex-col justify-center items-center gap-2 max-h-screen py-48">
+    <div className="flex flex-col justify-center items-center gap-2 min-h-screen py-48">
       <p className="p-2 text-5xl">{question.question} = {feedback ? question.correctAnswer : "?"}</p>
       {feedback === "Wrong!" ? <button onClick={reload} className="font-semibold border border-1 border-green-400 rounded py-2 px-4 bg-green-600 hover:bg-green-500">Next</button> : <input type='number' className="bg-gray-800 rounded p-1" value={userAnswer} onChange={changeHandler}/>}
       <p className={feedback === "Correct!" ? "text-green-400 font-md" : "text-red-500"}>{feedback}</p>
