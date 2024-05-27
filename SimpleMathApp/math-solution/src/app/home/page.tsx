@@ -1,5 +1,5 @@
 'use client'
-import Main from "../components/mainsection/links"
+import Main from "../components/main_section/Links"
 
 function HomePage() {
   return (
