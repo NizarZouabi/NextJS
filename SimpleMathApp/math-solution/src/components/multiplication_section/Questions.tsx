@@ -2,8 +2,8 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
-import generateMulti from "@/app/utils/gen"
-import Timer from "@/app/_lib/Timer"
+import generateMulti from "@/utils/gen"
+import Timer from "@/_lib/Timer"
 
 interface QuestionsProps {
   userAnswer: string
@@ -16,10 +16,10 @@ export default function Questions(props: QuestionsProps) {
   const [feedback, setFeedback] = useState<string>('')
   const [wrongs, setWrongs] = useState<string[]>([])
   const [count, setCount] = useState<number>(0)
-  const [answered, setAnswered] = useState<boolean>(false);
+  // const [answered, setAnswered] = useState<boolean>(false);
   const router = useRouter()
-  const reload = () => window.location.reload()
   const isCorrect = parseInt(userAnswer) === question.correctAnswer
+  const [resetInput, setResetInput] = useState<boolean>(false)
 
   const addToWrongs = () => {
     setWrongs([...wrongs, question.question])
@@ -41,13 +41,11 @@ export default function Questions(props: QuestionsProps) {
 
     setCount(count +1);
     window.sessionStorage.setItem('count', JSON.stringify(count +1));
-    setAnswered(true)
+    // setAnswered(true)
   }
 
   const handleTimeUp = () => {
-    if(!answered){
-      submit();
-    }
+    router.push("/multiplication/results")
   };
 
   const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,18 +72,26 @@ export default function Questions(props: QuestionsProps) {
     if(prevCount === 20){
         router.push("/multiplication/results")
     }
-  },[router])
+
+    if(resetInput){
+      setFeedback('')
+      setUserAnswer('')
+      setQuestion(generateMulti())
+      setResetInput(false)
+    }
+
+  },[router, resetInput, setUserAnswer])
 
   return (
     <div className="flex flex-col justify-center items-center gap-2 min-h-screen py-48">
-      <Timer seconds={0.1} onTimeUp={handleTimeUp} />
+      <Timer minutes={2} onTimeUp={handleTimeUp} />
       <p className="p-2 text-5xl">{question.question} = {feedback ? question.correctAnswer : "?"}</p>
-      {feedback === "Wrong!" || feedback === "Time is up!" ? <button onClick={reload} className="font-semibold border border-1 border-green-400 rounded py-2 px-4 bg-green-600 hover:bg-green-500">Next</button> : <input type='number' className="bg-gray-800 rounded p-1" value={userAnswer} onChange={changeHandler}/>}
+      {feedback === "Wrong!" || feedback === "Time is up!" ? <button onClick={() => setResetInput(true)} className="font-semibold border border-1 border-green-400 rounded py-2 px-4 bg-green-600 hover:bg-green-500">Next</button> : <input type='number' className="bg-gray-800 rounded p-1" value={userAnswer} onChange={changeHandler}/>}
       <p className={feedback === "Correct!" ? "text-green-400 font-md" : "text-red-500"}>{feedback}</p>
       <div className="flex flex-col items-center gap-2">
         <div className='flex flex-row gap-2'>
         {!feedback ? <button className="font-semibold border border-1 border-purple-500 rounded py-2 px-4 bg-purple-700 hover:bg-purple-600 outline-none" onClick={submit}>Submit</button> : null}
-        {feedback === "Correct!" ? <button onClick={reload} className="font-semibold border border-1 border-green-400 rounded py-2 px-4 bg-green-600 hover:bg-green-500">Next</button> : null}
+        {feedback === "Correct!" ? <button onClick={() => setResetInput(true)} className="font-semibold border border-1 border-green-400 rounded py-2 px-4 bg-green-600 hover:bg-green-500">Next</button> : null}
         </div>
       <Link href="/home"><button className="font-semibold border border-1 border-purple-500 rounded py-2 px-4 bg-purple-700 hover:bg-purple-600 outline-none" onClick={reset}>Go Back</button></Link>
       </div>
